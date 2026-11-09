@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Trang Chủ - Hệ Thống Dự Đoán Nguy Cơ Tiểu Đường ML{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <div class="container hero-container">
+        <div class="hero-text">
+            <div class="badge-pill">
+                <span class="pulse-dot"></span>
+                <span>Ứng dụng Machine Learning trong Y tế dự phòng</span>
+            </div>
+            <h1 class="hero-title">
+                Hệ Thống Hỗ Trợ Dự Đoán <br>
+                <span class="text-gradient">Nguy Cơ Bệnh Tiểu Đường</span>
+            </h1>
+            <p class="hero-subtitle">
+                Đánh giá nguy cơ mắc bệnh đái tháo đường nhanh chóng và tin cậy dựa trên 3 chỉ số sức khỏe cơ bản: 
+                <strong>Lượng đường huyết (Glucose)</strong>, <strong>Chỉ số khối cơ thể (BMI)</strong> và <strong>Độ tuổi</strong>.
+            </p>
+            <div class="hero-actions">
+                <a href="{{ url_for('predict') }}" class="btn btn-primary btn-lg">
+                    Bắt đầu dự đoán ngay
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="{{ url_for('about') }}" class="btn btn-outline btn-lg">
+                    Tìm hiểu mô hình
+                </a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">{{ best_accuracy }}%</span>
+                    <span class="stat-label">Độ chính xác (Accuracy)</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">03</span>
+                    <span class="stat-label">Chỉ số đầu vào tối giản</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">768</span>
+                    <span class="stat-label">Hồ sơ Pima Dataset</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-card-preview">
+            <div class="preview-card">
+                <div class="preview-header">
+                    <div class="preview-icon">🩺</div>
+                    <div>
+                        <h4 class="preview-title">Phiếu sàng lọc nguy cơ</h4>
+                        <span class="preview-sub">Mô hình Decision Tree Pipeline</span>
+                    </div>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-metric">
+                        <span class="p-name">Đường huyết (Glucose)</span>
+                        <span class="p-val val-warning">145 mg/dL</span>
+                    </div>
+                    <div class="preview-metric">
+                        <span class="p-name">Chỉ số khối (BMI)</span>
+                        <span class="p-val val-normal">27.4 kg/m²</span>
+                    </div>
+                    <div class="preview-metric">
+                        <span class="p-name">Độ tuổi</span>
+                        <span class="p-val val-normal">42 tuổi</span>
+                    </div>
+                    <div class="preview-result">
+                        <div class="result-badge-demo">
+                            <span>Xác suất nguy cơ: <strong>72.5%</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- QUY TRÌNH 3 BƯỚC SỬ DỤNG -->
+<section class="section steps-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="sub-badge">Hướng dẫn sử dụng</span>
+            <h2 class="section-title">Quy trình sàng lọc 3 bước đơn giản</h2>
+            <p class="section-subtitle">Chỉ mất chưa đầy 30 giây để hoàn tất kiểm tra và nhận bản phân tích toàn diện</p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-badge">Bước 1</div>
+                <div class="step-icon">📝</div>
+                <h3 class="step-title">Nhập 3 chỉ số sức khỏe</h3>
+                <p class="step-desc">
+                    Điền Lượng đường huyết (Glucose), BMI (hoặc dùng công cụ tính nhanh theo chiều cao, cân nặng) và Độ tuổi của bạn.
+                </p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-badge">Bước 2</div>
+                <div class="step-icon">⚙️</div>
+                <h3 class="step-title">Mô hình AI xử lý tự động</h3>
+                <p class="step-desc">
+                    Pipeline Machine Learning thực hiện chuẩn hóa dữ liệu, điền khuyết tự động và dự đoán qua thuật toán tối ưu.
+                </p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-badge">Bước 3</div>
+                <div class="step-icon">📊</div>
+                <h3 class="step-title">Xem kết quả & Khuyến nghị</h3>
+                <p class="step-desc">
+                    Nhận nhãn dự đoán nguy cơ, thang đo xác suất phần trăm kèm theo phân tích chi tiết từng chỉ số và lời khuyên sinh hoạt.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Ý NGHĨA 3 CHỈ SỐ LÂM SÀNG -->
+<section class="section features-section bg-light">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="sub-badge">Cơ sở dữ liệu y tế</span>
+            <h2 class="section-title">3 Yếu tố cốt lõi được sử dụng trong mô hình</h2>
+            <p class="section-subtitle">Được trích chọn khoa học từ bộ dữ liệu Pima Indians Diabetes Dataset</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon-wrapper icon-blue">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                </div>
+                <h3 class="feature-title">Glucose (Đường huyết)</h3>
+                <p class="feature-desc">
+                    Nồng độ glucose trong huyết tương sau thử nghiệm dung nạp đường. Đây là chỉ số có tương quan cao nhất ($r \approx 0.49$) với tình trạng tiểu đường.
+                </p>
+                <div class="feature-meta">
+                    <span>Đơn vị: <strong>mg/dL</strong></span>
+                    <span>Ngưỡng chuẩn đói: <strong>&lt; 100 mg/dL</strong></span>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon-wrapper icon-teal">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </div>
+                <h3 class="feature-title">BMI (Chỉ số khối cơ thể)</h3>
+                <p class="feature-desc">
+                    Tỷ lệ giữa cân nặng và bình phương chiều cao ($kg/m^2$). Thể trạng béo phì hoặc tích tụ mỡ nội tạng là nguyên nhân chính gây kháng insulin ở tế bào.
+                </p>
+                <div class="feature-meta">
+                    <span>Đơn vị: <strong>kg/m²</strong></span>
+                    <span>Chuẩn lý tưởng: <strong>18.5 - 22.9</strong></span>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon-wrapper icon-purple">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <h3 class="feature-title">Age (Độ tuổi)</h3>
+                <p class="feature-desc">
+                    Tuổi tác của đối tượng sàng lọc. Theo y văn, chức năng tiết insulin của tế bào beta đảo tụy và độ nhạy insulin có xu hướng suy giảm dần theo năm tháng.
+                </p>
+                <div class="feature-meta">
+                    <span>Đơn vị: <strong>Năm</strong></span>
+                    <span>Nguy cơ tăng từ: <strong>35 tuổi trở lên</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CALL TO ACTION BANNER -->
+<section class="section cta-section">
+    <div class="container cta-container text-center">
+        <h2 class="cta-title">Sẵn sàng kiểm tra nguy cơ sức khỏe của bạn?</h2>
+        <p class="cta-desc">Không mất phí, không cần đăng ký tài khoản, kết quả hiển thị tức thì với mô hình Machine Learning chuẩn xác.</p>
+        <a href="{{ url_for('predict') }}" class="btn btn-primary btn-lg">
+            Thực hiện dự đoán ngay bây giờ
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </div>
+</section>
+{% endblock %}
+

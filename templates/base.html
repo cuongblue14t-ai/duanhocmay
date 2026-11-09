@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Hệ Thống Dự Đoán Tiểu Đường - Machine Learning{% endblock %}</title>
+    <!-- Favicon Y tế SVG -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231d4ed8'><path d='M19 10.5h-5.5V5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v5.5H5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h5.5V19c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-5.5H19c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z'/></svg>">
+    <!-- CSS Tùy biến -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- THANH ĐIỀU HƯỚNG (NAVBAR) -->
+    <header class="navbar-header">
+        <div class="container navbar-container">
+            <a href="{{ url_for('home') }}" class="brand-logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">DiaPredict<span class="brand-badge">ML</span></span>
+                    <span class="brand-sub">Hệ Thống Sàng Lọc Tiểu Đường</span>
+                </div>
+            </a>
+
+            <nav class="nav-menu">
+                <a href="{{ url_for('home') }}" class="nav-link {% if request.path == '/' %}active{% endif %}">Trang chủ</a>
+                <a href="{{ url_for('predict') }}" class="nav-link {% if request.path == '/predict' %}active{% endif %}">Dự đoán chỉ số</a>
+                <a href="{{ url_for('about') }}" class="nav-link {% if request.path == '/about' %}active{% endif %}">Mô hình & Đánh giá</a>
+            </nav>
+
+            <div class="nav-action">
+                <a href="{{ url_for('predict') }}" class="btn btn-primary btn-sm">Bắt đầu ngay</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- BANNER CẢNH BÁO Y TẾ BẮT BUỘC -->
+    <div class="medical-disclaimer-banner">
+        <div class="container disclaimer-content">
+            <span class="disclaimer-icon">⚠️</span>
+            <p><strong>Lưu ý quan trọng:</strong> Đây là sản phẩm học tập môn Học Máy, không phải công cụ chẩn đoán hoặc thay thế bác sĩ chuyên khoa.</p>
+        </div>
+    </div>
+
+    <!-- NỘI DUNG CHÍNH (MAIN CONTENT) -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- CHÂN TRANG (FOOTER) -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-col">
+                <div class="brand-logo footer-logo">
+                    <div class="logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 2v20M2 12h20"/>
+                        </svg>
+                    </div>
+                    <span class="brand-title">DiaPredict ML</span>
+                </div>
+                <p class="footer-desc">
+                    Đồ án môn học Học Máy (Machine Learning) hỗ trợ dự đoán tình trạng tiểu đường dựa trên 3 chỉ số lâm sàng cơ bản: Glucose, BMI và Độ tuổi.
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-heading">Liên kết nhanh</h4>
+                <ul class="footer-links">
+                    <li><a href="{{ url_for('home') }}">Trang chủ</a></li>
+                    <li><a href="{{ url_for('predict') }}">Công cụ dự đoán</a></li>
+                    <li><a href="{{ url_for('about') }}">Báo cáo kỹ thuật mô hình</a></li>
+                    <li><a href="{{ url_for('api_metrics') }}" target="_blank">Dữ liệu API Metrics (JSON)</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-heading">Công nghệ triển khai</h4>
+                <div class="tech-tags">
+                    <span class="tech-tag">Python 3.14</span>
+                    <span class="tech-tag">Scikit-learn</span>
+                    <span class="tech-tag">Flask Backend</span>
+                    <span class="tech-tag">Decision Tree</span>
+                    <span class="tech-tag">Joblib Pipeline</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container text-center">
+                <p>&copy; 2026 Đồ án Học Máy. Dữ liệu chuẩn Pima Indians Diabetes Dataset (UCI / Kaggle).</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT TÙY BIẾN -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+

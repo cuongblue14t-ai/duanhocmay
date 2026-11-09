@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Kết Quả Dự Đoán - Hệ Thống Sàng Lọc Tiểu Đường ML{% endblock %}
+
+{% block content %}
+<section class="section result-section">
+    <div class="container result-page-container">
+        
+        <div class="page-title-block text-center">
+            <span class="sub-badge">Kết quả phân tích Machine Learning</span>
+            <h1 class="page-main-title">Báo Cáo Sàng Lọc Nguy Cơ Sức Khỏe</h1>
+            <p class="page-main-desc">Kết quả được tính toán dựa trên mô hình Decision Tree Pipeline tối ưu</p>
+        </div>
+
+        <!-- THẺ KẾT QUẢ TỔNG QUAN -->
+        <div class="result-hero-card {% if result.prediction == 1 %}card-danger{% else %}card-success{% endif %}">
+            <div class="result-hero-header">
+                <div class="result-hero-icon">
+                    {% if result.prediction == 1 %}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    {% else %}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    {% endif %}
+                </div>
+                <div class="result-hero-title-group">
+                    <span class="result-tag">
+                        {% if result.prediction == 1 %}NHÃN DỰ ĐOÁN: 1 (DƯƠNG TÍNH){% else %}NHÃN DỰ ĐOÁN: 0 (ÂM TÍNH){% endif %}
+                    </span>
+                    <h2 class="result-main-heading">{{ result.label_text }}</h2>
+                </div>
+            </div>
+
+            <!-- THANH ĐO XÁC SUẤT (PROBABILITY GAUGE) -->
+            <div class="probability-container">
+                <div class="prob-header">
+                    <span class="prob-label">Độ tin cậy của mô hình (Confidence Score):</span>
+                    <span class="prob-value"><strong>{{ result.confidence }}%</strong></span>
+                </div>
+                
+                <div class="prob-bar-track">
+                    <div class="prob-bar-fill {% if result.prediction == 1 %}fill-danger{% else %}fill-success{% endif %}" 
+                         style="width: {{ result.confidence }}%;">
+                    </div>
+                </div>
+
+                <div class="prob-split-labels">
+                    <span class="split-neg">Xác suất không tiểu đường: <strong>{{ result.prob_negative }}%</strong></span>
+                    <span class="split-pos">Xác suất có nguy cơ tiểu đường: <strong>{{ result.prob_positive }}%</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BẢN PHÂN TÍCH 3 CHỈ SỐ LÂM SÀNG CỦA BẠN -->
+        <div class="card result-detail-card">
+            <h3 class="section-card-title">🔍 Chi Tiết Phân Tích 3 Chỉ Số Lâm Sàng</h3>
+            <p class="section-card-desc">So sánh số liệu bạn đã nhập với các ngưỡng y khoa tham chiếu:</p>
+
+            <div class="metrics-grid">
+                {% for item in result.interpretations %}
+                <div class="metric-card metric-{{ item.status }}">
+                    <div class="metric-card-top">
+                        <span class="metric-card-name">{{ item.feature }}</span>
+                        <span class="status-pill pill-{{ item.status }}">
+                            {% if item.status == 'normal' %}Bình thường{% elif item.status == 'warning' %}Cần lưu ý{% else %}Nguy cơ cao{% endif %}
+                        </span>
+                    </div>
+                    <div class="metric-card-value">{{ item.value }}</div>
+                    <p class="metric-card-note">{{ item.note }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- BIỂU ĐỒ TRỰC QUAN HÓA KẾT QUẢ DỰ ĐOÁN (CHART.JS) -->
+        <div class="card result-chart-card">
+            <h3 class="section-card-title">📊 Biểu Đồ Trực Quan Hóa Đánh Giá Y Tế</h3>
+            <p class="section-card-desc">Phân tích đa chiều xác suất rủi ro và so sánh chỉ số của bạn với ngưỡng y khoa chuẩn:</p>
+
+            <div class="charts-grid-2">
+                <!-- Biểu đồ 1: Donut Chart Xác suất -->
+                <div class="chart-box">
+                    <h4 class="chart-title">Cơ cấu Xác suất Dự đoán từ Mô hình</h4>
+                    <div style="position: relative; height: 240px; display: flex; justify-content: center; align-items: center;">
+                        <canvas id="probabilityDonutChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Biểu đồ 2: So sánh chỉ số người dùng với ngưỡng chuẩn -->
+                <div class="chart-box">
+                    <h4 class="chart-title">So sánh Chỉ số của bạn vs Ngưỡng an toàn</h4>
+                    <div style="position: relative; height: 240px;">
+                        <canvas id="benchmarkBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KHUYẾN NGHỊ THAM KHẢO TỪ MÔ HÌNH -->
+        <div class="card recommendations-card">
+            <h3 class="section-card-title">💡 Lời Khuyên & Hướng Dẫn Sinh Hoạt Tham Khảo</h3>
+            <ul class="recommendation-list">
+                {% for rec in result.recommendations %}
+                <li class="recommendation-item">
+                    <span class="rec-icon">📌</span>
+                    <span>{{ rec }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- CẢNH BÁO MIỄN TRỪ TRÁCH NHIỆM Y KHOA -->
+        <div class="card disclaimer-alert-card">
+            <div class="disclaimer-alert-icon">⚠️</div>
+            <div class="disclaimer-alert-body">
+                <h4 class="disclaimer-alert-title">Tuyên Bố Miễn Trừ Trách Nhiệm Y Khoa (Medical Disclaimer)</h4>
+                <p class="disclaimer-alert-text">
+                    Hệ thống này được xây dựng trong khuôn khổ đồ án môn học <strong>Học Máy (Machine Learning)</strong> nhằm mục đích nghiên cứu, học tập thuật toán và minh họa ứng dụng công nghệ. Kết quả dự đoán và xác suất được đưa ra bởi thuật toán phân loại thống kê, <strong>hoàn toàn không có giá trị thay thế chẩn đoán, xét nghiệm chuyên sâu, hoặc phác đồ điều trị của bác sĩ chuyên khoa y tế</strong>. Nếu bạn có bất kỳ dấu hiệu nghi ngờ về sức khỏe, hãy liên hệ ngay với các trung tâm y tế uy tín.
+                </p>
+            </div>
+        </div>
+
+        <!-- CÁC HÀNH ĐỘNG TIẾP THEO -->
+        <div class="result-actions text-center">
+            <a href="{{ url_for('predict') }}" class="btn btn-primary btn-lg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                Dự đoán lại ca khác
+            </a>
+            <a href="{{ url_for('about') }}" class="btn btn-outline btn-lg">
+                Xem cơ sở mô hình Machine Learning
+            </a>
+            <button type="button" class="btn btn-secondary btn-lg" onclick="window.print()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                In phiếu kết quả
+            </button>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<!-- Thư viện Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. BIỂU ĐỒ TRÒN XÁC SUẤT (DONUT CHART)
+    const ctxDonut = document.getElementById('probabilityDonutChart');
+    if (ctxDonut) {
+        new Chart(ctxDonut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Không tiểu đường (0)', 'Nguy cơ tiểu đường (1)'],
+                datasets: [{
+                    data: [{{ result.prob_negative }}, {{ result.prob_positive }}],
+                    backgroundColor: ['#22c55e', '#ef4444'],
+                    hoverBackgroundColor: ['#16a34a', '#dc2626'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '68%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { family: 'Plus Jakarta Sans', size: 12, weight: 'bold' },
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ' ' + context.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. BIỂU ĐỒ CỘT SO SÁNH VỚI NGƯỠNG AN TOÀN (BENCHMARK BAR CHART)
+    const ctxBar = document.getElementById('benchmarkBarChart');
+    if (ctxBar) {
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['Glucose (mg/dL)', 'BMI (kg/m²)', 'Tuổi (Năm)'],
+                datasets: [
+                    {
+                        label: 'Chỉ số của bạn',
+                        data: [{{ result.glucose }}, {{ result.bmi }}, {{ result.age }}],
+                        backgroundColor: '#1d4ed8',
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Ngưỡng y khoa chuẩn',
+                        data: [100, 23, 35],
+                        backgroundColor: '#94a3b8',
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' },
+                        ticks: { font: { family: 'Plus Jakarta Sans' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Plus Jakarta Sans', weight: 'bold' } }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' },
+                            padding: 15
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+
