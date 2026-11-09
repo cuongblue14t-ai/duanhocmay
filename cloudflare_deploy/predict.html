@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dự Đoán Chỉ Số - Hệ Thống Sàng Lọc Tiểu Đường ML</title>
+    <!-- Favicon Y tế SVG -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231d4ed8'><path d='M19 10.5h-5.5V5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v5.5H5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h5.5V19c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-5.5H19c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z'/></svg>">
+    <!-- CSS Tùy biến -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- THANH ĐIỀU HƯỚNG (NAVBAR) -->
+    <header class="navbar-header">
+        <div class="container navbar-container">
+            <a href="/" class="brand-logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">DiaPredict<span class="brand-badge">ML</span></span>
+                    <span class="brand-sub">Hệ Thống Sàng Lọc Tiểu Đường</span>
+                </div>
+            </a>
+
+            <nav class="nav-menu">
+                <a href="/" class="nav-link ">Trang chủ</a>
+                <a href="/predict" class="nav-link active">Dự đoán chỉ số</a>
+                <a href="/about" class="nav-link ">Mô hình & Đánh giá</a>
+            </nav>
+
+            <div class="nav-action">
+                <a href="/predict" class="btn btn-primary btn-sm">Bắt đầu ngay</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- BANNER CẢNH BÁO Y TẾ BẮT BUỘC -->
+    <div class="medical-disclaimer-banner">
+        <div class="container disclaimer-content">
+            <span class="disclaimer-icon">⚠️</span>
+            <p><strong>Lưu ý quan trọng:</strong> Đây là sản phẩm học tập môn Học Máy, không phải công cụ chẩn đoán hoặc thay thế bác sĩ chuyên khoa.</p>
+        </div>
+    </div>
+
+    <!-- NỘI DUNG CHÍNH (MAIN CONTENT) -->
+    <main class="main-content">
+        
+<section class="section form-section">
+    <div class="container form-page-container">
+        
+        <div class="page-title-block text-center">
+            <span class="sub-badge">Nhập liệu lâm sàng</span>
+            <h1 class="page-main-title">Kiểm Tra Nguy Cơ Tiểu Đường</h1>
+            <p class="page-main-desc">
+                Nhập đầy đủ và chính xác 3 chỉ số sức khỏe dưới đây để mô hình Machine Learning tiến hành phân tích và đưa ra đánh giá.
+            </p>
+        </div>
+
+        
+
+        <div class="form-layout-grid">
+            <!-- CỘT TRÁI: FORM NHẬP LIỆU CHÍNH -->
+            <div class="card form-card">
+                <div class="card-header">
+                    <h3 class="card-title">Phiếu Thông Tin Chỉ Số</h3>
+                    <p class="card-subtitle">Vui lòng điền các số liệu xét nghiệm mới nhất của bạn</p>
+                </div>
+
+                <form action="/predict" method="POST" id="predictionForm" novalidate>
+                    <!-- 1. GLUCOSE -->
+                    <div class="form-group">
+                        <label for="glucose" class="form-label">
+                            1. Lượng đường huyết (Glucose) <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" 
+                                   id="glucose" 
+                                   name="glucose" 
+                                   class="form-control" 
+                                   placeholder="Ví dụ: 105" 
+                                   step="0.1" 
+                                   min="0" 
+                                   max="500" 
+                                   value="" 
+                                   required>
+                            <span class="input-unit">mg/dL</span>
+                        </div>
+                        <span class="form-hint">Khoảng giá trị bình thường lúc đói: 70 - 99 mg/dL. (Nếu chưa đo, nhập 0 để hệ thống tự điền trung vị).</span>
+                        <div class="invalid-feedback" id="glucoseError"></div>
+                    </div>
+
+                    <!-- 2. BMI -->
+                    <div class="form-group">
+                        <div class="label-with-helper">
+                            <label for="bmi" class="form-label">
+                                2. Chỉ số khối cơ thể (BMI) <span class="required">*</span>
+                            </label>
+                            <button type="button" class="btn-text-helper" id="toggleBmiCalcBtn">
+                                🧮 Chưa biết BMI? Tính nhanh tại đây
+                            </button>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="number" 
+                                   id="bmi" 
+                                   name="bmi" 
+                                   class="form-control" 
+                                   placeholder="Ví dụ: 24.5" 
+                                   step="0.1" 
+                                   min="0" 
+                                   max="100" 
+                                   value="" 
+                                   required>
+                            <span class="input-unit">kg/m²</span>
+                        </div>
+                        <span class="form-hint">Chuẩn bình thường người Việt Nam: 18.5 - 22.9 kg/m².</span>
+                        <div class="invalid-feedback" id="bmiError"></div>
+
+                        <!-- CÔNG CỤ TÍNH NHANH BMI (ẨN/HIỆN) -->
+                        <div class="bmi-quick-calculator" id="bmiQuickCalc" style="display: none;">
+                            <div class="bmi-calc-header">
+                                <strong>Công cụ tính nhanh BMI:</strong>
+                            </div>
+                            <div class="bmi-calc-inputs">
+                                <div class="calc-field">
+                                    <label>Chiều cao (cm):</label>
+                                    <input type="number" id="calcHeight" placeholder="Ví dụ: 165" min="50" max="250">
+                                </div>
+                                <div class="calc-field">
+                                    <label>Cân nặng (kg):</label>
+                                    <input type="number" id="calcWeight" placeholder="Ví dụ: 62" min="10" max="250" step="0.5">
+                                </div>
+                                <button type="button" class="btn btn-sm btn-teal" id="btnCalculateBmi">Tính & Điền</button>
+                            </div>
+                            <div class="bmi-calc-result" id="bmiCalcResult"></div>
+                        </div>
+                    </div>
+
+                    <!-- 3. AGE -->
+                    <div class="form-group">
+                        <label for="age" class="form-label">
+                            3. Độ tuổi (Age) <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" 
+                                   id="age" 
+                                   name="age" 
+                                   class="form-control" 
+                                   placeholder="Ví dụ: 38" 
+                                   min="1" 
+                                   max="125" 
+                                   value="" 
+                                   required>
+                            <span class="input-unit">tuổi</span>
+                        </div>
+                        <span class="form-hint">Độ tuổi từ 1 đến 125 tuổi.</span>
+                        <div class="invalid-feedback" id="ageError"></div>
+                    </div>
+
+                    <!-- NÚT DỰ ĐOÁN -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitBtn">
+                            <span class="btn-text">Dự đoán kết quả ngay</span>
+                            <span class="btn-spinner" style="display: none;">
+                                <span class="spinner"></span> Đang phân tích...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- CỘT PHẢI: HƯỚNG DẪN & BẢNG THAM KHẢO Y HỌC -->
+            <div class="form-sidebar">
+                <div class="card info-card">
+                    <h4 class="info-title">📋 Bảng Chuẩn Y Khoa Tham Khảo</h4>
+                    <div class="ref-table">
+                        <div class="ref-row">
+                            <span class="ref-label">Glucose đói bình thường:</span>
+                            <span class="ref-badge badge-green">70 - 99 mg/dL</span>
+                        </div>
+                        <div class="ref-row">
+                            <span class="ref-label">Tiền tiểu đường:</span>
+                            <span class="ref-badge badge-yellow">100 - 125 mg/dL</span>
+                        </div>
+                        <div class="ref-row">
+                            <span class="ref-label">Đái tháo đường:</span>
+                            <span class="ref-badge badge-red">&ge; 126 mg/dL</span>
+                        </div>
+                    </div>
+                    <div class="ref-divider"></div>
+                    <div class="ref-table">
+                        <div class="ref-row">
+                            <span class="ref-label">BMI Chuẩn Châu Á:</span>
+                            <span class="ref-badge badge-green">18.5 - 22.9 kg/m²</span>
+                        </div>
+                        <div class="ref-row">
+                            <span class="ref-label">Thừa cân:</span>
+                            <span class="ref-badge badge-yellow">23.0 - 24.9 kg/m²</span>
+                        </div>
+                        <div class="ref-row">
+                            <span class="ref-label">Béo phì:</span>
+                            <span class="ref-badge badge-red">&ge; 25.0 kg/m²</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card tip-card">
+                    <div class="tip-icon">💡</div>
+                    <div>
+                        <h5 class="tip-heading">Mẹo để kết quả chuẩn xác nhất</h5>
+                        <p class="tip-text">
+                            Chỉ số đường huyết nên được đo vào buổi sáng sau khi nhịn ăn ít nhất 8 tiếng (đường huyết lúc đói - Fasting Blood Glucose).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    </main>
+
+    <!-- CHÂN TRANG (FOOTER) -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-col">
+                <div class="brand-logo footer-logo">
+                    <div class="logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 2v20M2 12h20"/>
+                        </svg>
+                    </div>
+                    <span class="brand-title">DiaPredict ML</span>
+                </div>
+                <p class="footer-desc">
+                    Đồ án môn học Học Máy (Machine Learning) hỗ trợ dự đoán tình trạng tiểu đường dựa trên 3 chỉ số lâm sàng cơ bản: Glucose, BMI và Độ tuổi.
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-heading">Liên kết nhanh</h4>
+                <ul class="footer-links">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li><a href="/predict">Công cụ dự đoán</a></li>
+                    <li><a href="/about">Báo cáo kỹ thuật mô hình</a></li>
+                    <li><a href="/api/metrics" target="_blank">Dữ liệu API Metrics (JSON)</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-heading">Công nghệ triển khai</h4>
+                <div class="tech-tags">
+                    <span class="tech-tag">Python 3.14</span>
+                    <span class="tech-tag">Scikit-learn</span>
+                    <span class="tech-tag">Flask Backend</span>
+                    <span class="tech-tag">Decision Tree</span>
+                    <span class="tech-tag">Joblib Pipeline</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container text-center">
+                <p>&copy; 2026 Đồ án Học Máy. Dữ liệu chuẩn Pima Indians Diabetes Dataset (UCI / Kaggle).</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT TÙY BIẾN -->
+    <script src="/static/js/script.js"></script>
+    
+</body>
+</html>

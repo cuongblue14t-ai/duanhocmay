@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giới Thiệu Mô Hình & Đánh Giá - DiaPredict ML</title>
+    <!-- Favicon Y tế SVG -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231d4ed8'><path d='M19 10.5h-5.5V5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v5.5H5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h5.5V19c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-5.5H19c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z'/></svg>">
+    <!-- CSS Tùy biến -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- THANH ĐIỀU HƯỚNG (NAVBAR) -->
+    <header class="navbar-header">
+        <div class="container navbar-container">
+            <a href="/" class="brand-logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">DiaPredict<span class="brand-badge">ML</span></span>
+                    <span class="brand-sub">Hệ Thống Sàng Lọc Tiểu Đường</span>
+                </div>
+            </a>
+
+            <nav class="nav-menu">
+                <a href="/" class="nav-link ">Trang chủ</a>
+                <a href="/predict" class="nav-link ">Dự đoán chỉ số</a>
+                <a href="/about" class="nav-link active">Mô hình & Đánh giá</a>
+            </nav>
+
+            <div class="nav-action">
+                <a href="/predict" class="btn btn-primary btn-sm">Bắt đầu ngay</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- BANNER CẢNH BÁO Y TẾ BẮT BUỘC -->
+    <div class="medical-disclaimer-banner">
+        <div class="container disclaimer-content">
+            <span class="disclaimer-icon">⚠️</span>
+            <p><strong>Lưu ý quan trọng:</strong> Đây là sản phẩm học tập môn Học Máy, không phải công cụ chẩn đoán hoặc thay thế bác sĩ chuyên khoa.</p>
+        </div>
+    </div>
+
+    <!-- NỘI DUNG CHÍNH (MAIN CONTENT) -->
+    <main class="main-content">
+        
+<section class="section about-section">
+    <div class="container about-container">
+        
+        <div class="page-title-block text-center">
+            <span class="sub-badge">Báo cáo khoa học đề tài</span>
+            <h1 class="page-main-title">Kiến Trúc Mô Hình & Đánh Giá Thực Nghiệm</h1>
+            <p class="page-main-desc">
+                Quy trình nghiên cứu, huấn luyện và so sánh 3 thuật toán Machine Learning trên bộ dữ liệu Pima Indians Diabetes
+            </p>
+        </div>
+
+        <!-- 1. TỔNG QUAN DỮ LIỆU & TIỀN XỬ LÝ -->
+        <div class="card about-card">
+            <h3 class="section-card-title">1. Khảo Sát & Tiền Xử Lý Dữ Liệu Chống Rò Rỉ (Anti Data Leakage)</h3>
+            <p>
+                Đề tài sử dụng bộ dữ liệu chuẩn y khoa <strong>Pima Indians Diabetes Dataset</strong> từ Viện Quốc gia về Bệnh tiểu đường, Tiêu hóa và Bệnh thận (NIDDK - Hoa Kỳ), được chia sẻ trên Kaggle và UCI Machine Learning Repository.
+            </p>
+            <div class="info-badges-grid">
+                <div class="info-badge-item">
+                    <span class="ib-title">Tổng số mẫu</span>
+                    <span class="ib-value">768 bệnh nhân</span>
+                </div>
+                <div class="info-badge-item">
+                    <span class="ib-title">Tập Huấn luyện (Train - 80%)</span>
+                    <span class="ib-value">614 mẫu (stratify)</span>
+                </div>
+                <div class="info-badge-item">
+                    <span class="ib-title">Tập Kiểm thử (Test - 20%)</span>
+                    <span class="ib-value">154 mẫu (độc lập)</span>
+                </div>
+                <div class="info-badge-item">
+                    <span class="ib-title">3 Chỉ số đầu vào</span>
+                    <span class="ib-value">Glucose, BMI, Age</span>
+                </div>
+            </div>
+
+            <div class="leakage-explanation-box">
+                <h4>🛡️ Quy trình chống rò rỉ dữ liệu (No Data Leakage):</h4>
+                <ul>
+                    <li><strong>Xử lý giá trị 0 không hợp lý:</strong> Các chỉ số Glucose = 0 (5 mẫu) và BMI = 0 (11 mẫu) được quy đổi thành <code>NaN</code> vì đây là dữ liệu bị thiếu ẩn.</li>
+                    <li><strong>Đóng gói Pipeline:</strong> Quá trình tính toán trung vị (SimpleImputer) và chuẩn hóa thang đo (StandardScaler) được tính toán <strong>chỉ trên tập Train (fit)</strong>, sau đó đóng băng và chỉ áp dụng (transform) sang tập Test và môi trường Web.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 2. BẢNG SO SÁNH HIỆU NĂNG THỰC TẾ 3 THUẬT TOÁN -->
+        <div class="card about-card">
+            <h3 class="section-card-title">2. Bảng So Sánh Hiệu Năng 3 Thuật Toán Trên Tập Kiểm Thử (154 Mẫu)</h3>
+            <p>
+                Mọi chỉ số đánh giá được tính toán từ quá trình chạy thực tế bằng thư viện <code>scikit-learn</code>, tuyệt đối không tạo số liệu giả lập:
+            </p>
+
+            <div class="table-responsive">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>Thuật toán Machine Learning</th>
+                            <th>Độ chính xác (Accuracy)</th>
+                            <th>Độ chuẩn xác (Precision)</th>
+                            <th>Độ nhạy (Recall)</th>
+                            <th>F1-Score</th>
+                            <th>ROC-AUC</th>
+                            <th>Trạng thái lựa chọn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                            
+                            <tr class="">
+                                <td>
+                                    <strong>Logistic Regression</strong>
+                                    
+                                </td>
+                                <td><strong>70.78%</strong></td>
+                                <td>59.57%</td>
+                                <td><span class="">51.85%</span></td>
+                                <td><strong>55.45%</strong></td>
+                                <td>78.63%</td>
+                                <td>
+                                    
+                                    <span class="status-pill pill-muted">Mô hình đối sánh</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr class="row-highlight">
+                                <td>
+                                    <strong>Decision Tree</strong>
+                                    
+                                    <span class="badge-chosen">Mô hình tối ưu</span>
+                                    
+                                </td>
+                                <td><strong>79.87%</strong></td>
+                                <td>70.91%</td>
+                                <td><span class="text-bold-green">72.22%</span></td>
+                                <td><strong>71.56%</strong></td>
+                                <td>81.44%</td>
+                                <td>
+                                    
+                                    <span class="status-pill pill-success">Đã triển khai Web</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr class="">
+                                <td>
+                                    <strong>Random Forest</strong>
+                                    
+                                </td>
+                                <td><strong>75.97%</strong></td>
+                                <td>67.35%</td>
+                                <td><span class="">61.11%</span></td>
+                                <td><strong>64.08%</strong></td>
+                                <td>81.46%</td>
+                                <td>
+                                    
+                                    <span class="status-pill pill-muted">Mô hình đối sánh</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                        
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="rationale-box">
+                <h4>🎯 Lý do lựa chọn mô hình Decision Tree:</h4>
+                <p>
+                    Trong sàng lọc y khoa, <strong>Recall (Độ nhạy)</strong> là chỉ số quan trọng nhất vì nó phản ánh tỷ lệ người thực sự có bệnh được mô hình phát hiện đúng, giảm thiểu ca âm tính giả (False Negative - bỏ sót bệnh nhân). <strong>Decision Tree</strong> đạt <strong>Recall 72.22%</strong> (vượt trội so với Logistic Regression 51.85% và Random Forest 61.11%) cùng với <strong>Accuracy 79.87%</strong> và <strong>F1-Score 71.56%</strong>, là mô hình hiệu quả nhất trên bộ 3 đặc trưng đầu vào.
+                </p>
+            </div>
+        </div>
+
+        <!-- 3. BIỂU ĐỒ TRỰC QUAN HÓA SO SÁNH & MA TRẬN NHẦM LẪN -->
+        <div class="card about-card">
+            <h3 class="section-card-title">3. Biểu Đồ Đánh Giá & Ma Trận Nhầm Lẫn (Confusion Matrix)</h3>
+            <p>Các biểu đồ được sinh tự động từ quá trình thực nghiệm:</p>
+
+            <div class="charts-grid-2">
+                <div class="chart-box">
+                    <h4 class="chart-title">Biểu đồ so sánh 4 chỉ số hiệu năng</h4>
+                    <img src="/static/images/model_comparison.png" alt="So sánh mô hình" class="img-responsive chart-img">
+                </div>
+                <div class="chart-box">
+                    <h4 class="chart-title">Ma trận nhầm lẫn (Confusion Matrix - 154 mẫu Test)</h4>
+                    <img src="/static/images/confusion_matrix_all.png" alt="Confusion Matrix" class="img-responsive chart-img">
+                </div>
+            </div>
+
+            <div class="charts-grid-2 mt-4">
+                <div class="chart-box">
+                    <h4 class="chart-title">Phân bố 3 chỉ số theo tình trạng bệnh</h4>
+                    <img src="/static/images/feature_distributions.png" alt="Phân bố chỉ số" class="img-responsive chart-img">
+                </div>
+                <div class="chart-box">
+                    <h4 class="chart-title">Ma trận tương quan Pearson</h4>
+                    <img src="/static/images/correlation_matrix.png" alt="Ma trận tương quan" class="img-responsive chart-img">
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. THÔNG TIN API PHỤC VỤ TÍCH HỢP -->
+        <div class="card about-card">
+            <h3 class="section-card-title">4. Tài Liệu RESTful API Backend Flask</h3>
+            <p>Hệ thống cung cấp API JSON để tích hợp dự đoán từ các hệ thống khác:</p>
+
+            <div class="api-docs-box">
+                <div class="api-endpoint">
+                    <span class="api-method method-post">POST</span>
+                    <span class="api-url">/api/predict</span>
+                </div>
+                <p class="api-desc">Tiếp nhận thông tin 3 chỉ số lâm sàng và trả về kết quả dự đoán kèm xác suất.</p>
+
+                <h5 class="api-subtitle">Ví dụ Payload JSON gửi lên:</h5>
+                <pre class="code-block"><code>{
+  "glucose": 145.0,
+  "bmi": 28.5,
+  "age": 42
+}</code></pre>
+
+                <h5 class="api-subtitle">Ví dụ Response JSON trả về (HTTP 200):</h5>
+                <pre class="code-block"><code>{
+  "status": "success",
+  "prediction": 1,
+  "label": "Nguy cơ tiểu đường (Dương tính)",
+  "probabilities": {
+    "negative_class_0_pct": 27.5,
+    "positive_class_1_pct": 72.5
+  },
+  "confidence_score_pct": 72.5,
+  "disclaimer": "Kết quả chỉ mang tính chất tham khảo học tập..."
+}</code></pre>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    </main>
+
+    <!-- CHÂN TRANG (FOOTER) -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-col">
+                <div class="brand-logo footer-logo">
+                    <div class="logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 2v20M2 12h20"/>
+                        </svg>
+                    </div>
+                    <span class="brand-title">DiaPredict ML</span>
+                </div>
+                <p class="footer-desc">
+                    Đồ án môn học Học Máy (Machine Learning) hỗ trợ dự đoán tình trạng tiểu đường dựa trên 3 chỉ số lâm sàng cơ bản: Glucose, BMI và Độ tuổi.
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-heading">Liên kết nhanh</h4>
+                <ul class="footer-links">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li><a href="/predict">Công cụ dự đoán</a></li>
+                    <li><a href="/about">Báo cáo kỹ thuật mô hình</a></li>
+                    <li><a href="/api/metrics" target="_blank">Dữ liệu API Metrics (JSON)</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-heading">Công nghệ triển khai</h4>
+                <div class="tech-tags">
+                    <span class="tech-tag">Python 3.14</span>
+                    <span class="tech-tag">Scikit-learn</span>
+                    <span class="tech-tag">Flask Backend</span>
+                    <span class="tech-tag">Decision Tree</span>
+                    <span class="tech-tag">Joblib Pipeline</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container text-center">
+                <p>&copy; 2026 Đồ án Học Máy. Dữ liệu chuẩn Pima Indians Diabetes Dataset (UCI / Kaggle).</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT TÙY BIẾN -->
+    <script src="/static/js/script.js"></script>
+    
+</body>
+</html>

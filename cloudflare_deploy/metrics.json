@@ -1,0 +1,78 @@
+{
+  "best_model": "Decision Tree",
+  "features": [
+    "Glucose",
+    "BMI",
+    "Age"
+  ],
+  "models_comparison": {
+    "Logistic Regression": {
+      "accuracy": 0.7077922077922078,
+      "precision": 0.5957446808510638,
+      "recall": 0.5185185185185185,
+      "f1_score": 0.5544554455445545,
+      "roc_auc": 0.7862962962962963,
+      "confusion_matrix": [
+        [
+          81,
+          19
+        ],
+        [
+          26,
+          28
+        ]
+      ]
+    },
+    "Decision Tree": {
+      "accuracy": 0.7987012987012987,
+      "precision": 0.7090909090909091,
+      "recall": 0.7222222222222222,
+      "f1_score": 0.7155963302752294,
+      "roc_auc": 0.8143518518518518,
+      "confusion_matrix": [
+        [
+          84,
+          16
+        ],
+        [
+          15,
+          39
+        ]
+      ]
+    },
+    "Random Forest": {
+      "accuracy": 0.7597402597402597,
+      "precision": 0.673469387755102,
+      "recall": 0.6111111111111112,
+      "f1_score": 0.6407766990291263,
+      "roc_auc": 0.8146296296296296,
+      "confusion_matrix": [
+        [
+          84,
+          16
+        ],
+        [
+          21,
+          33
+        ]
+      ]
+    }
+  },
+  "train_samples": 614,
+  "test_samples": 154,
+  "imputer_medians": {
+    "Glucose": 117.0,
+    "BMI": 32.4,
+    "Age": 29.0
+  },
+  "scaler_means": {
+    "Glucose": 121.67100977198697,
+    "BMI": 32.44820846905537,
+    "Age": 33.36644951140065
+  },
+  "scaler_scales": {
+    "Glucose": 29.979350764655706,
+    "BMI": 6.81856216148434,
+    "Age": 11.82379790254742
+  }
+}
